@@ -1,8 +1,14 @@
 import React from 'react';
 import { useState } from 'react';
+
 function Square({value, onSquareClick}){
-  return <button className='square' onClick={onSquareClick}>{value}</button>
+  return (
+    <button className='square' onClick={onSquareClick}>
+      {value}
+    </button>
+  );
 }
+
 function Board({xIsNext, squares, onPlay, movesLeft}) {
   function handleClick(i){
     if(squares[i] || calculateWinner(squares, movesLeft)){
@@ -30,9 +36,11 @@ function Board({xIsNext, squares, onPlay, movesLeft}) {
       status = "Next player: " + (xIsNext ? "X" : "O");
     }
   }
+
+  
   return (
     <div>
-      {/* <div className='moves'>Moves left: {movesLeft}</div> */}
+      <div className='moves'>Moves left: {movesLeft}</div>
       <div className='status'>{status}</div>
       <div className='board-row'>
         <Square value={squares[0]} onSquareClick={() => handleClick(0)} />
@@ -54,7 +62,7 @@ function Board({xIsNext, squares, onPlay, movesLeft}) {
 }
 
 export default function Game(){
-  const [movesLeft, updateMoves] = useState(9);
+  const [movesLeft] = useState([...Array(10).keys()].reverse());
   const [history, setHistory] = useState([Array(9).fill(null)]);
   const [currentMove, setCurrentMove] = useState(0);
   const currentSquares = history[currentMove];
@@ -63,11 +71,10 @@ export default function Game(){
   function handlePlay(nextSquares){
     const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
     setHistory(nextHistory);
-    updateMoves(movesLeft - 1);
     setCurrentMove(nextHistory.length - 1);
   }
 
-  function jumpTo(nextMove){
+  function jumpTo(nextMove){    
     setCurrentMove(nextMove);
   }
 
@@ -88,7 +95,7 @@ export default function Game(){
   return (
     <div className='game'>
       <div className='game-board'>
-        <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} />
+        <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} movesLeft={movesLeft[currentMove]} />
       </div>
       <div className='game-info'>
         <ol>{moves}</ol>
